@@ -1,10 +1,17 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2025-07-15',
+  modules: ['@nuxt/eslint'],
   devtools: { enabled: true },
+  compatibilityDate: '2025-07-15',
+
   vite: {
     server: {
-      allowedHosts: true
-    }
-  }
+      allowedHosts: true,
+    },
+  },
+  eslint: {
+    config: {
+      stylistic: true,
+    },
+  },
 })
