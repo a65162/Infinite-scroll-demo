@@ -10,8 +10,13 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@bootstrap-vue-next/nuxt": "^0.43.8",
     "@nuxt/eslint": "1.15.2",
     "@vueuse/core": "^14.2.1",
+    "bootstrap": "^5.3.8",
+    "bootstrap-vue-next": "^0.43.8",
+    "dayjs": "^1.11.19",
+    "dayjs-nuxt": "2.1.11",
     "nuxt": "^4.3.1",
     "octokit": "^5.0.5",
     "vue": "^3.5.29",

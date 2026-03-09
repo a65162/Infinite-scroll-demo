@@ -1,12 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: ['@nuxt/eslint'],
-  devtools: { enabled: true },
+  modules: ['@nuxt/eslint', '@bootstrap-vue-next/nuxt', 'dayjs-nuxt'],
+  devtools: { enabled: false },
   app: {
     head: {
       title: 'Github Repositories',
     },
   },
+  css: ['bootstrap/dist/css/bootstrap.min.css'],
   runtimeConfig: {
     githubPersonalToken: '',
   },
@@ -16,6 +17,12 @@ export default defineNuxtConfig({
     server: {
       allowedHosts: true,
     },
+  },
+  dayjs: {
+    locales: ['en'],
+    plugins: ['timezone'],
+    defaultLocale: 'en',
+    defaultTimezone: 'Asia/Taipei',
   },
   eslint: {
     config: {
