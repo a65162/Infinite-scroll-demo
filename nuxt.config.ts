@@ -1,6 +1,12 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: ['@nuxt/eslint', '@bootstrap-vue-next/nuxt', 'dayjs-nuxt'],
+  modules: [
+    '@nuxt/eslint',
+    '@bootstrap-vue-next/nuxt',
+    'dayjs-nuxt',
+    '@vueuse/nuxt',
+    '@nuxtjs/stylelint-module',
+  ],
   devtools: { enabled: false },
   app: {
     head: {
