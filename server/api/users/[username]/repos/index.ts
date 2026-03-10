@@ -1,7 +1,5 @@
 import { Octokit } from 'octokit'
-
-type RepoSort = 'created' | 'updated' | 'pushed' | 'full_name'
-type RepoDirection = 'asc' | 'desc'
+import type { RepoSort, RepoDirection } from '@/types/githubRepository'
 
 function isRepoSort(value: unknown): value is RepoSort {
   return ['created', 'updated', 'pushed', 'full_name'].includes(value as string)

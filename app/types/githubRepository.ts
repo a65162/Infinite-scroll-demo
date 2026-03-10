@@ -120,3 +120,6 @@ export interface GitHubRepository {
   default_branch: string
   permissions: GitHubPermissions
 }
+
+export type RepoSort = 'created' | 'updated' | 'pushed' | 'full_name'
+export type RepoDirection = 'asc' | 'desc'

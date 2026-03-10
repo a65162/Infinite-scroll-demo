@@ -1,12 +1,45 @@
 <template>
   <BContainer class="page-container">
     <div class="page-header">
-      <h1 class="page-header__title">
-        Vue.js Repositories
-      </h1>
-      <p class="page-header__subtitle">
-        Explore public repositories from the vuejs organization
-      </p>
+      <BRow>
+        <BCol cols="6">
+          <h1 class="page-header__title">
+            Vue.js Repositories
+          </h1>
+          <p class="page-header__subtitle">
+            Explore public repositories from the vuejs organization
+          </p>
+        </BCol>
+        <BCol cols="6">
+          <BRow
+            align-v="center"
+            class="mb-3"
+          >
+            <BCol cols="auto">
+              Sort:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </BCol>
+            <BCol col>
+              <BFormSelect
+                v-model="apiParams.sort"
+                :disabled="isInitialzing"
+                :options="sortOptions"
+              />
+            </BCol>
+          </BRow>
+          <BRow align-v="center">
+            <BCol cols="auto">
+              Direction:
+            </BCol>
+            <BCol col>
+              <BFormSelect
+                v-model="apiParams.direction"
+                :disabled="isInitialzing"
+                :options="directionOptions"
+              />
+            </BCol>
+          </BRow>
+        </BCol>
+      </BRow>
     </div>
     <div
       v-bind="containerProps"
@@ -50,24 +83,38 @@
 </template>
 
 <script lang="ts" setup>
-import type { GitHubRepository } from '@/types/githubRepository'
+import type { GitHubRepository, RepoSort, RepoDirection } from '@/types/githubRepository'
 
 // Fetch data function
 const gitHubRepositories = ref<GitHubRepository[] | null>(null)
 const isInitialzing = computed(() => !gitHubRepositories.value)
 const initialPerPage = 30
 const infinitePerPage = 10
-const apiParams = {
+const apiParams = ref({
   page: 1,
   perPage: initialPerPage,
-}
+  sort: 'updated' as RepoSort,
+  direction: 'desc' as RepoDirection,
+})
+const sortOptions = [
+  { value: 'created', text: 'Created' },
+  { value: 'updated', text: 'Updated' },
+  { value: 'pushed', text: 'Pushed' },
+  { value: 'full_name', text: 'Full Name' },
+]
+const directionOptions = [
+  { value: 'asc', text: 'Asc' },
+  { value: 'desc', text: 'Desc' },
+]
 const getRepositories: ({ username, page, perPage }: {
   username: string
   page: number
   perPage?: number
-}) => Promise<GitHubRepository[]> = async ({ username, page, perPage }) => {
+  sort: RepoSort
+  direction: RepoDirection
+}) => Promise<GitHubRepository[]> = async ({ username, page, perPage, sort, direction }) => {
   try {
-    const { data } = await fetch(`/api/users/${username}/repos?page=${page}&per_page=${perPage}`).then(response => response.json())
+    const { data } = await fetch(`/api/users/${username}/repos?page=${page}&per_page=${perPage}&sort=${sort}&direction=${direction}`).then(response => response.json())
 
     return data
   }
@@ -76,6 +123,18 @@ const getRepositories: ({ username, page, perPage }: {
     return []
   }
 }
+watch([() => apiParams.value.direction, () => apiParams.value.sort], async ([newDirection, newSort]) => {
+  gitHubRepositories.value = null
+  apiParams.value = {
+    page: 1,
+    perPage: initialPerPage,
+    direction: newDirection,
+    sort: newSort,
+  }
+  isFetchingCompletely.value = false
+  const { page, perPage, direction, sort } = apiParams.value
+  gitHubRepositories.value = await getRepositories({ username: 'vuejs', page, perPage, direction, sort })
+})
 
 // Virtual list function
 const isFetchingCompletely = ref(false)
@@ -93,15 +152,15 @@ const { list, containerProps, wrapperProps } = useVirtualList(
 const { isLoading: isLoadingMore } = useInfiniteScroll(containerProps.ref, async (state) => {
   if (!state.arrivedState.bottom) return
 
-  const isExecutingLoadMoreFirst = apiParams.perPage === initialPerPage
+  const isExecutingLoadMoreFirst = apiParams.value.perPage === initialPerPage
   const duplicatedCount = isExecutingLoadMoreFirst ? initialPerPage % infinitePerPage : 0
 
-  if (isExecutingLoadMoreFirst) apiParams.page += Math.floor(initialPerPage / infinitePerPage)
-  else apiParams.page++
-  if (apiParams.perPage !== infinitePerPage) apiParams.perPage = infinitePerPage
+  if (isExecutingLoadMoreFirst) apiParams.value.page += Math.floor(initialPerPage / infinitePerPage)
+  else apiParams.value.page++
+  if (apiParams.value.perPage !== infinitePerPage) apiParams.value.perPage = infinitePerPage
 
-  const { page, perPage } = apiParams
-  const newData = await getRepositories({ username: 'vuejs', page, perPage })
+  const { page, perPage, sort, direction } = apiParams.value
+  const newData = await getRepositories({ username: 'vuejs', page, perPage, sort, direction })
 
   if (duplicatedCount) newData.splice(0, duplicatedCount)
 
@@ -113,8 +172,8 @@ const { isLoading: isLoadingMore } = useInfiniteScroll(containerProps.ref, async
 
 // Initialization
 onMounted(async () => {
-  const { page, perPage } = apiParams
-  gitHubRepositories.value = await getRepositories({ username: 'vuejs', page, perPage })
+  const { page, perPage, sort, direction } = apiParams.value
+  gitHubRepositories.value = await getRepositories({ username: 'vuejs', page, perPage, sort, direction })
 })
 </script>
 
