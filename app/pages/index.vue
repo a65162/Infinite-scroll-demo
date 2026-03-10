@@ -124,6 +124,7 @@ const getRepositories: ({ username, page, perPage }: {
   }
 }
 watch([() => apiParams.value.direction, () => apiParams.value.sort], async ([newDirection, newSort]) => {
+  containerProps.ref.value?.scrollTo({ top: 0 }) // reset scroll position
   gitHubRepositories.value = null
   apiParams.value = {
     page: 1,
