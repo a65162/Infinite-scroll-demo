@@ -110,8 +110,8 @@ const getRepositories: ({ username, page, perPage }: {
   username: string
   page: number
   perPage?: number
-  sort: RepoSort
-  direction: RepoDirection
+  sort?: RepoSort
+  direction?: RepoDirection
 }) => Promise<GitHubRepository[]> = async ({ username, page, perPage, sort, direction }) => {
   try {
     const { data } = await fetch(`/api/users/${username}/repos?page=${page}&per_page=${perPage}&sort=${sort}&direction=${direction}`).then(response => response.json())
