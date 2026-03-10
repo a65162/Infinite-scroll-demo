@@ -61,11 +61,15 @@ const apiParams = {
   page: 1,
   perPage: initialPerPage,
 }
-const getRepositories = async ({ username, page, perPage }: { username: string, page: number, perPage?: number }) => {
+const getRepositories: ({ username, page, perPage }: {
+  username: string
+  page: number
+  perPage?: number
+}) => Promise<GitHubRepository[]> = async ({ username, page, perPage }) => {
   try {
     const { data } = await fetch(`/api/users/${username}/repos?page=${page}&per_page=${perPage}`).then(response => response.json())
 
-    return data as GitHubRepository[]
+    return data
   }
   catch {
     // TODO: Send error messages to Sentry or other log servers
