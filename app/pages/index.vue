@@ -93,10 +93,10 @@ const { list, containerProps, wrapperProps } = useVirtualList(
 const { isLoading: isLoadingMore } = useInfiniteScroll(containerProps.ref, async (state) => {
   if (!state.arrivedState.bottom) return
 
-  const isExecutedLoadMoreFirst = apiParams.perPage === initialPerPage
-  const duplicatedCount = isExecutedLoadMoreFirst ? initialPerPage % infinitePerPage : 0
+  const isExecutingLoadMoreFirst = apiParams.perPage === initialPerPage
+  const duplicatedCount = isExecutingLoadMoreFirst ? initialPerPage % infinitePerPage : 0
 
-  if (isExecutedLoadMoreFirst) apiParams.page += Math.floor(initialPerPage / infinitePerPage)
+  if (isExecutingLoadMoreFirst) apiParams.page += Math.floor(initialPerPage / infinitePerPage)
   else apiParams.page++
   if (apiParams.perPage !== infinitePerPage) apiParams.perPage = infinitePerPage
 
