@@ -95,6 +95,7 @@ const apiParams = ref({
   perPage: initialPerPage,
   sort: 'updated' as RepoSort,
   direction: 'desc' as RepoDirection,
+  username: 'vuejs',
 })
 const sortOptions = [
   { value: 'created', text: 'Created' },
@@ -123,18 +124,17 @@ const getRepositories: ({ username, page, perPage }: {
     return []
   }
 }
-watch([() => apiParams.value.direction, () => apiParams.value.sort], async ([newDirection, newSort]) => {
+watch([() => apiParams.value.direction, () => apiParams.value.sort], async () => {
   containerProps.ref.value?.scrollTo({ top: 0 }) // reset scroll position
   gitHubRepositories.value = null
   apiParams.value = {
+    ...apiParams.value,
     page: 1,
     perPage: initialPerPage,
-    direction: newDirection,
-    sort: newSort,
   }
   isFetchingCompletely.value = false
-  const { page, perPage, direction, sort } = apiParams.value
-  gitHubRepositories.value = await getRepositories({ username: 'vuejs', page, perPage, direction, sort })
+  const { page, perPage, direction, sort, username } = apiParams.value
+  gitHubRepositories.value = await getRepositories({ username, page, perPage, direction, sort })
 })
 
 // Virtual list function
@@ -160,8 +160,8 @@ const { isLoading: isLoadingMore } = useInfiniteScroll(containerProps.ref, async
   else apiParams.value.page++
   if (apiParams.value.perPage !== infinitePerPage) apiParams.value.perPage = infinitePerPage
 
-  const { page, perPage, sort, direction } = apiParams.value
-  const newData = await getRepositories({ username: 'vuejs', page, perPage, sort, direction })
+  const { page, perPage, sort, direction, username } = apiParams.value
+  const newData = await getRepositories({ username, page, perPage, sort, direction })
 
   if (duplicatedCount) newData.splice(0, duplicatedCount)
 
@@ -173,8 +173,8 @@ const { isLoading: isLoadingMore } = useInfiniteScroll(containerProps.ref, async
 
 // Initialization
 onMounted(async () => {
-  const { page, perPage, sort, direction } = apiParams.value
-  gitHubRepositories.value = await getRepositories({ username: 'vuejs', page, perPage, sort, direction })
+  const { page, perPage, sort, direction, username } = apiParams.value
+  gitHubRepositories.value = await getRepositories({ username, page, perPage, sort, direction })
 })
 </script>
 
